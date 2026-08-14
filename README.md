@@ -23,7 +23,7 @@ nexachain-assessment/
 ### Backend
 ```bash
 cd backend
-cp .env.example .env      # fill in your own values, see Environment Variables below
+cp .env.example            # fill in your own values, see Environment Variables below
 npm install
 npm run dev                # nodemon, or `npm start` for plain node
 ```
@@ -32,7 +32,7 @@ Server runs on `http://localhost:5000` by default. On startup it connects to Mon
 ### Frontend
 ```bash
 cd frontend
-cp .env.example .env
+cp .env.example
 npm install
 npm run dev
 ```
