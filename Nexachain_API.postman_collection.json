@@ -1,0 +1,205 @@
+{
+  "info": {
+    "name": "Nexachain AI - MERN Assessment API",
+    "description": "Investment & referral platform API. Set {{baseUrl}} and {{token}} as collection variables. {{token}} is set automatically by the Login/Register requests' test scripts.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"mobileNumber\": \"9876543210\",\n  \"password\": \"password123\",\n  \"referredByCode\": \"\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data?.data?.token) pm.collectionVariables.set('token', data.data.token);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "201 Created",
+              "body": "{\n  \"success\": true,\n  \"message\": \"User registered successfully\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIs...\",\n    \"user\": {\n      \"id\": \"665f1c2e8a1b2c3d4e5f6789\",\n      \"fullName\": \"Jane Doe\",\n      \"email\": \"jane@example.com\",\n      \"referralCode\": \"A1B2C3D4\"\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data?.data?.token) pm.collectionVariables.set('token', data.data.token);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 OK",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Login successful\",\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIs...\",\n    \"user\": {\n      \"id\": \"665f1c2e8a1b2c3d4e5f6789\",\n      \"fullName\": \"Jane Doe\",\n      \"email\": \"jane@example.com\",\n      \"referralCode\": \"A1B2C3D4\"\n    }\n  }\n}"
+            },
+            {
+              "name": "401 Invalid credentials",
+              "body": "{\n  \"success\": false,\n  \"message\": \"Invalid credentials\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Investments",
+      "item": [
+        {
+          "name": "Create Investment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/investments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"investmentAmount\": 10000,\n  \"planDetails\": \"Growth Plan 90D\",\n  \"startDate\": \"2026-08-12\",\n  \"endDate\": \"2026-11-10\",\n  \"dailyROIPercentage\": 1.5\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Investment created\",\n  \"data\": {\n    \"_id\": \"665f1d3e8a1b2c3d4e5f679a\",\n    \"user\": \"665f1c2e8a1b2c3d4e5f6789\",\n    \"investmentAmount\": 10000,\n    \"planDetails\": \"Growth Plan 90D\",\n    \"startDate\": \"2026-08-12T00:00:00.000Z\",\n    \"endDate\": \"2026-11-10T00:00:00.000Z\",\n    \"dailyROIPercentage\": 1.5,\n    \"status\": \"Active\",\n    \"createdAt\": \"2026-08-12T09:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "View User Investments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/investments"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "body": "{\n  \"success\": true,\n  \"count\": 1,\n  \"data\": [\n    {\n      \"_id\": \"665f1d3e8a1b2c3d4e5f679a\",\n      \"investmentAmount\": 10000,\n      \"planDetails\": \"Growth Plan 90D\",\n      \"startDate\": \"2026-08-12T00:00:00.000Z\",\n      \"endDate\": \"2026-11-10T00:00:00.000Z\",\n      \"dailyROIPercentage\": 1.5,\n      \"status\": \"Active\"\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Totals",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/dashboard"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"totalInvestments\": 10000,\n    \"totalROIEarned\": 150,\n    \"totalLevelIncomeEarned\": 7.5,\n    \"walletBalance\": 157.5\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Referrals",
+      "item": [
+        {
+          "name": "Fetch Direct Referrals",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/referrals/direct"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "body": "{\n  \"success\": true,\n  \"count\": 1,\n  \"data\": [\n    {\n      \"_id\": \"665f1e4e8a1b2c3d4e5f67ab\",\n      \"fullName\": \"Amit Kumar\",\n      \"email\": \"amit@example.com\",\n      \"referralCode\": \"B2C3D4E5\",\n      \"accountStatus\": \"Active\",\n      \"createdAt\": \"2026-08-10T10:00:00.000Z\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Fetch Complete Referral Tree",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/referrals/tree"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"665f1c2e8a1b2c3d4e5f6789\",\n    \"fullName\": \"Jane Doe\",\n    \"email\": \"jane@example.com\",\n    \"referralCode\": \"A1B2C3D4\",\n    \"children\": [\n      {\n        \"id\": \"665f1e4e8a1b2c3d4e5f67ab\",\n        \"fullName\": \"Amit Kumar\",\n        \"referralCode\": \"B2C3D4E5\",\n        \"children\": []\n      }\n    ]\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "History",
+      "item": [
+        {
+          "name": "Get ROI History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/roi-history"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "body": "{\n  \"success\": true,\n  \"count\": 1,\n  \"data\": [\n    {\n      \"_id\": \"665f1f5e8a1b2c3d4e5f67cd\",\n      \"investment\": \"665f1d3e8a1b2c3d4e5f679a\",\n      \"roiAmount\": 150,\n      \"date\": \"2026-08-13T00:00:00.000Z\",\n      \"status\": \"Credited\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Referral Income History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/referral-income"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "body": "{\n  \"success\": true,\n  \"count\": 1,\n  \"data\": [\n    {\n      \"_id\": \"665f205e8a1b2c3d4e5f67ef\",\n      \"sourceUser\": \"665f1e4e8a1b2c3d4e5f67ab\",\n      \"referralLevel\": 1,\n      \"incomeAmount\": 7.5,\n      \"date\": \"2026-08-13T00:00:00.000Z\"\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
